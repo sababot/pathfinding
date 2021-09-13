@@ -2,17 +2,48 @@
 
 using namespace std;
 
-int main()
+#define HEIGHT 20
+#define WIDTH 40
+
+void renderScreen(int markerX, int markerY, int targetX, int targetY)
 {
-	for (int y = 0; y < 20; i++)
+	for (int i = 0; i < HEIGHT; i++)
 	{
-		for (int x = 0; x < 20; j++)
-		{
-			if (y = 0 && x != 20)
-				cout << "#";
-			if (x = 20)
-				cout << "\n";
-			if (y != 0 && y != 20 && 
-		}
+		cout << "*";
+
+    		for (int j = 0; j < WIDTH; j++)
+    		{
+      			if (i == 0 || i == (HEIGHT - 1))
+      			{
+        			cout << "*";
+      			}
+			
+			else if (i == markerY && j == markerX)
+			{
+				cout << "@";
+			}
+
+			else if (i == targetY && j == targetX)
+			{
+				cout << "0";
+			}
+
+      			else
+      			{
+        			cout << " ";
+      			}	
+    		}
+
+    		cout << "*\n";
 	}
+}
+
+void placeMarker(int x, int y)
+{
+
+}
+
+int main(int argc, char** argv)
+{
+	renderScreen(atoi(argv[1]) * 2, atoi(argv[2]), atoi(argv[3]) * 2, atoi(argv[4]));
 }
