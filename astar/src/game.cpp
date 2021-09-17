@@ -42,3 +42,8 @@ void unit(int x, int y)
 		glVertex2f(x, y + 1);
 	glEnd();
 }
+
+void barrierDraw(int x, int y)
+{
+	glRectd(x, y, x + 1, y + 1);
+}

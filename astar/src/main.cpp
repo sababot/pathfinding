@@ -1,26 +1,36 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
+#include <vector>
 #include "../include/game.h"
 
 #define COLUMNS 50
 #define ROWS 50
+#define FPS 60
 
+int mouseState, mouseX, mouseY;
+std::vector<int> barriersX, barriersY;
+
+void timer_callback(int);
 void display_callback();
 void reshape_callback(int, int);
+void mouse_callback(int, int, int, int);
 
 void init()
 {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	initGrid(COLUMNS, ROWS);
 }
+
 int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
 	glutInitWindowSize(500, 500);
-	glutCreateWindow("SNAKE");
+	glutCreateWindow("A* Pathfinding Visualizer");
 	glutDisplayFunc(display_callback);
 	glutReshapeFunc(reshape_callback);
+	glutTimerFunc(0, timer_callback, 0);
+	glutMouseFunc(mouse_callback);
 	init();
 	glutMainLoop();
 
@@ -31,6 +41,12 @@ void display_callback()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawGrid();
+	
+	for (int i = 0; i < (int)barriersX.size(); i++)
+	{
+		barrierDraw(barriersX[i] / (glutGet(GLUT_WINDOW_WIDTH) / 50), 49 - barriersY[i] / (glutGet(GLUT_WINDOW_HEIGHT) / 50));
+	}
+
 	glutSwapBuffers();
 }
 
@@ -41,4 +57,23 @@ void reshape_callback(int w, int h)
 	glLoadIdentity();
 	glOrtho(0.0, COLUMNS, 0.0, ROWS, -1.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
+}
+
+void timer_callback(int)
+{
+	glutPostRedisplay();
+	glutTimerFunc(1000/FPS, timer_callback, 0);
+}
+
+void mouse_callback(int button, int state, int x, int y)
+{
+	mouseState = state;
+	mouseX = x;
+	mouseY = y;
+	
+	if (state == GLUT_DOWN)
+	{	
+		barriersX.push_back(x);
+		barriersY.push_back(y);
+	}
 }
