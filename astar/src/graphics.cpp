@@ -1,7 +1,7 @@
 #include <GL/glut.h>
 #include "../include/graphics.h"
 #include <vector>
-#include <iostream>
+#include <cmath>
 #include <algorithm>
 
 using namespace std;
@@ -12,17 +12,18 @@ struct sNode
 {
 	bool barrier = false;
 	bool visited = false;
+	bool start = false;
+	bool end = false;
 	float globalGoal;
 	float localGoal;
 	int x;
 	int y;
-	std::vector<sNode> neighbours;
+	vector<int> neighboursX;
+	vector<int> neighboursY;
 	sNode* parent = nullptr;
 };
 
 sNode nodes[16][16];
-sNode nodeStart;
-sNode nodeEnd;
 
 void initGrid(int x, int y)
 {
@@ -82,15 +83,47 @@ void nodeInit()
 		for (int y = 0; y < 16; y++)
 		{
 			if (y > 0)
-				// Code
+			{
+				nodes[x][y].neighboursX.push_back(x);
+				nodes[x][y].neighboursY.push_back(y - 1);
+			}
+			
 			if (y < 15)
-				// Code
+			{
+				nodes[x][y].neighboursX.push_back(x);
+				nodes[x][y].neighboursY.push_back(y + 1);
+			}
+			
 			if (x > 0)
-				// Code
+			{
+				nodes[x][y].neighboursX.push_back(x - 1);
+				nodes[x][y].neighboursY.push_back(y);
+			}
+			
 			if (x < 15)
-				// Code
+			{
+				nodes[x][y].neighboursX.push_back(x + 1);
+				nodes[x][y].neighboursY.push_back(y);
+		
+			}
 		}
 	}
+	
+	nodes[1][7].start = true;
+	nodes[14][7].end = true;
+}
+
+void solve()
+{
+	auto distance = [] (int x1, int x2, int y1, int y2)
+	{
+		return sqrtf((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y1));
+	};
+
+	auto heuristic = [distance] (int x1, int x2, int y1, int y2)
+	{
+		return distance(x1, x2, y1, y2);
+	};
 }
 
 void toggleBarrier(int x, int y)
@@ -114,14 +147,16 @@ void drawNodes()
 		for(int y = 0; y < 16; y++)
 		{
 			if (nodes[x][y].barrier == true)
-			{
 				barrierDraw(nodes[x][y].x, nodes[x][y].y);
-			}
-	
+			
+			else if (nodes[x][y].start == true)
+				startDraw(nodes[x][y].x, nodes[x][y].y);
+			
+			else if (nodes[x][y].end == true)
+				endDraw(nodes[x][y].x, nodes[x][y].y);
+
 			else
-			{
 				emptyDraw(nodes[x][y].x, nodes[x][y].y);
-			}
 		}
 	}
 }
@@ -136,4 +171,16 @@ void emptyDraw(int x, int y)
 {
 	glColor3f(0.0, 0.0, 0.0);
 	glRectd(x, y ,x + 1, y + 1);
+}
+
+void startDraw(int x, int y)
+{
+	glColor3f(0.0, 1.0, 0.0);
+	glRectd(x, y, x + 1, y + 1);
+}
+
+void endDraw(int x, int y)
+{
+	glColor3f(1.0, 0.0, 0.0);
+	glRectd(x, y, x + 1, y + 1);
 }
