@@ -1,14 +1,15 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <vector>
-#include "../include/game.h"
+#include "../include/graphics.h"
 
-#define COLUMNS 50
-#define ROWS 50
+#define COLUMNS 16
+#define ROWS 16
 #define FPS 60
 
-int mouseState, mouseX, mouseY;
-std::vector<int> barriersX, barriersY;
+std::vector<int> barriersX, barriersY; // Barriers
+int startX, startY; // Start
+int endX, endY; // End
 
 void timer_callback(int);
 void display_callback();
@@ -17,8 +18,9 @@ void mouse_callback(int, int, int, int);
 
 void init()
 {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	initGrid(COLUMNS, ROWS);
+	nodeInit();
 }
 
 int main(int argc, char **argv)
@@ -40,12 +42,18 @@ int main(int argc, char **argv)
 void display_callback()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	drawGrid();
 	
-	for (int i = 0; i < (int)barriersX.size(); i++)
+	drawNodes();	
+	drawGrid(); // Grid
+	
+	/*
+	for (int i = 0; i < (int)barriersX.size(); i++) // Barriers
 	{
-		barrierDraw(barriersX[i] / (glutGet(GLUT_WINDOW_WIDTH) / 50), 49 - barriersY[i] / (glutGet(GLUT_WINDOW_HEIGHT) / 50));
+		barrierDraw(barriersX[i] / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - barriersY[i] / (glutGet(GLUT_WINDOW_HEIGHT) / 16));
 	}
+	startDraw(startX / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - startY / (glutGet(GLUT_WINDOW_HEIGHT) / 16)); // Start
+	endDraw(endX / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - endY / (glutGet(GLUT_WINDOW_HEIGHT) / 16)); // End
+	*/
 
 	glutSwapBuffers();
 }
@@ -67,13 +75,28 @@ void timer_callback(int)
 
 void mouse_callback(int button, int state, int x, int y)
 {
-	mouseState = state;
-	mouseX = x;
-	mouseY = y;
-	
-	if (state == GLUT_DOWN)
-	{	
+	if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
+	{
+		toggleBarrier(x / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - y / (glutGet(GLUT_WINDOW_HEIGHT) / 16));
+	}
+
+	/*
+	if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
+	{		
 		barriersX.push_back(x);
 		barriersY.push_back(y);
 	}
+	
+	else if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+	{
+		startX = x;
+		startY = y;
+	}
+
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+	{
+		endX = x;
+		endY = y;
+	}
+	*/
 }
