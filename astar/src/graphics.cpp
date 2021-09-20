@@ -24,6 +24,8 @@ struct sNode
 };
 
 sNode nodes[16][16];
+int startX, startY;
+int endX, endY;
 
 void initGrid(int x, int y)
 {
@@ -111,6 +113,12 @@ void nodeInit()
 	
 	nodes[1][7].start = true;
 	nodes[14][7].end = true;
+
+	startX = 1;
+	startY = 7;
+
+	endX = 14;
+	endY = 7;
 }
 
 void solve()
@@ -124,6 +132,24 @@ void solve()
 	{
 		return distance(x1, x2, y1, y2);
 	};
+
+	// Setup starting conditions
+	int currentX, currentY;
+	nodes[startX][startY].localGoal = 0.0f;
+	nodes[endX][endY].globalGoal = heuristic(startX, endX, startY, endY);
+
+	// Add starting node to the to test list so that it gets tested first
+	list<int> listToTestX;
+	list<int> listToTestY;
+
+	listToTestX.push_back(startX);
+	listToTestY.push_back(startY);
+	
+	// While the tested list contains nodes there could be better paths. It will stop searching once the target has been reached
+	while (!listToTestX.empty() && ((currentX != endX) && (currentY != endY)))
+	{
+		// Code
+	}
 }
 
 void toggleBarrier(int x, int y)
