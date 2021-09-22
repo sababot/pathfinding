@@ -22,6 +22,7 @@ struct sNode
 	int y;
 	vector<int> neighboursX;
 	vector<int> neighboursY;
+	vector<sNode*> neighbours;
 	sNode* parent = nullptr;
 };
 
@@ -114,6 +115,21 @@ void nodeInit()
 			}
 		}
 	}
+
+	for (int x = 0; x < 16; x++)
+	{
+		for (int y = 0; y < 16; y++)
+		{
+			if (y > 0)
+				nodes[x][y].neighbours.push_back(&nodes[x][y - 1]);
+			if (y < 15)
+				nodes[x][y].neighbours.push_back(&nodes[x][y + 1]);
+			if (x > 0)
+				nodes[x][y].neighbours.push_back(&nodes[x - 1][y]);
+			if (x < 15)
+				nodes[x][y].neighbours.push_back(&nodes[x + 1][y]);
+		}
+	}
 	
 	nodes[1][7].start = true;
 	nodes[14][7].end = true;
@@ -123,10 +139,25 @@ void nodeInit()
 
 	endX = 14;
 	endY = 7;
+	
+	nodeStart = &nodes[1][7];
+	nodeEnd = &nodes[14][7];
 }
 
-void Solve_AStar()
+void solve()
 {
+	// Reset all nodes to default values
+	for (int x = 0; x < 16; x++)
+	{
+		for (int y = 0; y < 16; y++)
+		{
+			nodes[x][y].visited = false;
+			nodes[x][y].globalGoal = INFINITY;
+			nodes[x][y].localGoal = INFINITY;
+			nodes[x][y].parent = nullptr;
+		}
+	}
+	
 	auto distance = [](sNode* a, sNode* b) // For convenience
 	{
 		return sqrtf((a->x - b->x)*(a->x - b->x) + (a->y - b->y)*(a->y - b->y));
@@ -152,14 +183,15 @@ void Solve_AStar()
 	// which have not yet been explored. However, we will also stop 
 	// searching when we reach the target - there may well be better
 	// paths but this one will do - it wont be the longest.
+	
 	while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd)// Find absolutely shortest path // && nodeCurrent != nodeEnd)
 	{
 		// Sort Untested nodes by global goal, so lowest is first
-		listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs){ return lhs->fGlobalGoal < rhs->fGlobalGoal; } );
+		listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs){ return lhs->globalGoal < rhs->globalGoal; } );
 			
 		// Front of listNotTestedNodes is potentially the lowest distance node. Our
 		// list may also contain nodes that have been visited, so ditch these...
-		while(!listNotTestedNodes.empty() && listNotTestedNodes.front()->bVisited)
+		while(!listNotTestedNodes.empty() && listNotTestedNodes.front()->visited)
 			listNotTestedNodes.pop_front();
 
 		// ...or abort because there are no valid nodes left to test
@@ -167,39 +199,50 @@ void Solve_AStar()
 			break;
 
 		nodeCurrent = listNotTestedNodes.front();
-		nodeCurrent->bVisited = true; // We only explore a node once
+		nodeCurrent->visited = true; // We only explore a node once
 			
 					
 		// Check each of this node's neighbours...
-		for (auto nodeNeighbour : nodeCurrent->vecNeighbours)
+		for (auto nodeNeighbour : nodeCurrent->neighbours)
 		{
 			// ... and only if the neighbour is not visited and is 
 			// not an obstacle, add it to NotTested List
-			if (!nodeNeighbour->bVisited && nodeNeighbour->bObstacle == 0)
+			if (!nodeNeighbour->visited && nodeNeighbour->barrier == 0)
 				listNotTestedNodes.push_back(nodeNeighbour);
 
 			// Calculate the neighbours potential lowest parent distance
-			float fPossiblyLowerGoal = nodeCurrent->fLocalGoal + distance(nodeCurrent, nodeNeighbour);
+			float fPossiblyLowerGoal = nodeCurrent->localGoal + distance(nodeCurrent, nodeNeighbour);
 
 			// If choosing to path through this node is a lower distance than what 
 			// the neighbour currently has set, update the neighbour to use this node
 			// as the path source, and set its distance scores as necessary
-			if (fPossiblyLowerGoal < nodeNeighbour->fLocalGoal)
+			if (fPossiblyLowerGoal < nodeNeighbour->localGoal)
 			{
 				nodeNeighbour->parent = nodeCurrent;
-				nodeNeighbour->fLocalGoal = fPossiblyLowerGoal;
+				nodeNeighbour->localGoal = fPossiblyLowerGoal;
 
 				// The best path length to the neighbour being tested has changed, so
 				// update the neighbour's score. The heuristic is used to globally bias
 				// the path algorithm, so it knows if its getting better or worse. At some
 				// point the algo will realise this path is worse and abandon it, and then go
 				// and search along the next best path.
-				nodeNeighbour->fGlobalGoal = nodeNeighbour->fLocalGoal + heuristic(nodeNeighbour, nodeEnd);
+				nodeNeighbour->globalGoal = nodeNeighbour->localGoal + heuristic(nodeNeighbour, nodeEnd);
 			}
 		}	
 	}
+}
 
-	return true;
+void drawPath()
+{
+	if (nodeEnd != nullptr)
+	{
+		sNode *p = nodeEnd;
+
+		while (p->parent != nullptr)
+		{
+			// Code
+		}
+	}
 }
 
 /*
