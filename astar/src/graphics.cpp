@@ -1,7 +1,9 @@
 #include <GL/glut.h>
 #include "../include/graphics.h"
 #include <vector>
+#include <array>
 #include <cmath>
+#include <list>
 #include <algorithm>
 
 using namespace std;
@@ -134,22 +136,28 @@ void solve()
 	};
 
 	// Setup starting conditions
-	int currentX, currentY;
+	int current;
 	nodes[startX][startY].localGoal = 0.0f;
 	nodes[endX][endY].globalGoal = heuristic(startX, endX, startY, endY);
 
 	// Add starting node to the to test list so that it gets tested first
-	list<int> listToTestX;
-	list<int> listToTestY;
-
-	listToTestX.push_back(startX);
-	listToTestY.push_back(startY);
+	vector<std::array<int, 2>> listToTest;
+	int startNode[2] = {startX, startY};
+	int endNode[2] = {endX, endY};
+	listToTest.push_back(startNode);
 	
 	// While the tested list contains nodes there could be better paths. It will stop searching once the target has been reached
-	while (!listToTestX.empty() && ((currentX != endX) && (currentY != endY)))
+/*	
+	while (!listToTest.empty() && listToTest[current] != endNode)
 	{
-		// Code
+		// Sort untested nodes by global goal from lowest to largest
+		for (int i = 0; i < (int)listToTest.size(); i++)
+		{
+			// Code
+		}
+		// Ditch nodes which have already been visited
 	}
+	*/
 }
 
 void toggleBarrier(int x, int y)

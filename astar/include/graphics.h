@@ -9,3 +9,4 @@ void barrierDraw(int, int);
 void emptyDraw(int, int);
 void startDraw(int, int);
 void endDraw(int, int);
+void solve();

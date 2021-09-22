@@ -7,10 +7,6 @@
 #define ROWS 16
 #define FPS 60
 
-std::vector<int> barriersX, barriersY; // Barriers
-int startX, startY; // Start
-int endX, endY; // End
-
 void timer_callback(int);
 void display_callback();
 void reshape_callback(int, int);
@@ -21,6 +17,7 @@ void init()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	initGrid(COLUMNS, ROWS);
 	nodeInit();
+	solve();
 }
 
 int main(int argc, char **argv)
@@ -46,15 +43,6 @@ void display_callback()
 	drawNodes();	
 	drawGrid(); // Grid
 	
-	/*
-	for (int i = 0; i < (int)barriersX.size(); i++) // Barriers
-	{
-		barrierDraw(barriersX[i] / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - barriersY[i] / (glutGet(GLUT_WINDOW_HEIGHT) / 16));
-	}
-	startDraw(startX / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - startY / (glutGet(GLUT_WINDOW_HEIGHT) / 16)); // Start
-	endDraw(endX / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - endY / (glutGet(GLUT_WINDOW_HEIGHT) / 16)); // End
-	*/
-
 	glutSwapBuffers();
 }
 
@@ -79,24 +67,4 @@ void mouse_callback(int button, int state, int x, int y)
 	{
 		toggleBarrier(x / (glutGet(GLUT_WINDOW_WIDTH) / 16), 15 - y / (glutGet(GLUT_WINDOW_HEIGHT) / 16));
 	}
-
-	/*
-	if (button == GLUT_MIDDLE_BUTTON && state == GLUT_DOWN)
-	{		
-		barriersX.push_back(x);
-		barriersY.push_back(y);
-	}
-	
-	else if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
-		startX = x;
-		startY = y;
-	}
-
-	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-	{
-		endX = x;
-		endY = y;
-	}
-	*/
 }
