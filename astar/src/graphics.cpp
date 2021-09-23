@@ -16,6 +16,7 @@ struct sNode
 	bool visited = false;
 	bool start = false;
 	bool end = false;
+	bool path = false;
 	float globalGoal;
 	float localGoal;
 	int x;
@@ -56,12 +57,12 @@ void unit(int x, int y)
 	if (x == 0 || y == 0 || x == gridX - 1 || y == gridY - 1)
 	{
 		glLineWidth(1.0);
-		glColor3f(1.0, 0.5, 1.0);
+		glColor3f(1.0, 1.0, 1.0);
 	}
 	else
 	{
 		glLineWidth(1.0);
-		glColor3f(1.0, 0.5, 1.0);
+		glColor3f(1.0, 1.0, 1.0);
 	}
 
 	glBegin(GL_LINE_LOOP);
@@ -152,61 +153,55 @@ void solve()
 		for (int y = 0; y < 16; y++)
 		{
 			nodes[x][y].visited = false;
+			nodes[x][y].path = false;
 			nodes[x][y].globalGoal = INFINITY;
 			nodes[x][y].localGoal = INFINITY;
 			nodes[x][y].parent = nullptr;
 		}
 	}
 	
-	auto distance = [](sNode* a, sNode* b) // For convenience
+	auto distance = [](sNode* a, sNode* b)
 	{
 		return sqrtf((a->x - b->x)*(a->x - b->x) + (a->y - b->y)*(a->y - b->y));
 	};
 
-	auto heuristic = [distance](sNode* a, sNode* b) // So we can experiment with heuristic
+	auto heuristic = [distance](sNode* a, sNode* b)
 	{
 		return distance(a, b);
 	};
 
-	// Setup starting conditions
+	// starting conditions
 	sNode *nodeCurrent = nodeStart;
 	nodeStart->localGoal = 0.0f;
 	nodeStart->globalGoal = heuristic(nodeStart, nodeEnd);
 
-	// Add start node to not tested list - this will ensure it gets tested.
-	// As the algorithm progresses, newly discovered nodes get added to this
-	// list, and will themselves be tested later
+	// add start node to list to test to ensure it gets tested
 	list<sNode*> listNotTestedNodes;
 	listNotTestedNodes.push_back(nodeStart);
 
-	// if the not tested list contains nodes, there may be better paths
-	// which have not yet been explored. However, we will also stop 
-	// searching when we reach the target - there may well be better
-	// paths but this one will do - it wont be the longest.
-	
-	while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd)// Find absolutely shortest path // && nodeCurrent != nodeEnd)
+	// paths but this one will do, it wont be the longest
+	while (!listNotTestedNodes.empty() && nodeCurrent != nodeEnd)
 	{
-		// Sort Untested nodes by global goal, so lowest is first
+		// sort nodes from lowest to highest by global goal
 		listNotTestedNodes.sort([](const sNode* lhs, const sNode* rhs){ return lhs->globalGoal < rhs->globalGoal; } );
 			
-		// Front of listNotTestedNodes is potentially the lowest distance node. Our
-		// list may also contain nodes that have been visited, so ditch these...
+		// front is probably lowest distance node
+		// remove nodes which have already been visited
 		while(!listNotTestedNodes.empty() && listNotTestedNodes.front()->visited)
 			listNotTestedNodes.pop_front();
 
-		// ...or abort because there are no valid nodes left to test
+		// break loop if there ara no nodes to test
 		if (listNotTestedNodes.empty())
 			break;
 
 		nodeCurrent = listNotTestedNodes.front();
-		nodeCurrent->visited = true; // We only explore a node once
+		nodeCurrent->visited = true; // only check node once
 			
 					
 		// Check each of this node's neighbours...
 		for (auto nodeNeighbour : nodeCurrent->neighbours)
 		{
-			// ... and only if the neighbour is not visited and is 
-			// not an obstacle, add it to NotTested List
+			// add neighbour to list if it isnt a barrier or hasn't been visited
 			if (!nodeNeighbour->visited && nodeNeighbour->barrier == 0)
 				listNotTestedNodes.push_back(nodeNeighbour);
 
@@ -240,48 +235,11 @@ void drawPath()
 
 		while (p->parent != nullptr)
 		{
-			// Code
+			p->parent->path = true;
+			p = p->parent;
 		}
 	}
 }
-
-/*
-void solve()
-{
-	auto distance = [] (int x1, int x2, int y1, int y2)
-	{
-		return sqrtf((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y1));
-	};
-
-	auto heuristic = [distance] (int x1, int x2, int y1, int y2)
-	{
-		return distance(x1, x2, y1, y2);
-	};
-
-	// Setup starting conditions
-	int current;
-	nodes[startX][startY].localGoal = 0.0f;
-	nodes[endX][endY].globalGoal = heuristic(startX, endX, startY, endY);
-
-	// Add starting node to the to test list so that it gets tested first
-	vector<std::array<int, 2>> listToTest;
-	int startNode[2] = {startX, startY};
-	int endNode[2] = {endX, endY};
-	listToTest.push_back(startNode);
-	
-	// While the tested list contains nodes there could be better paths. It will stop searching once the target has been reached
-	while (!listToTest.empty() && listToTest[current] != endNode)
-	{
-		// Sort untested nodes by global goal from lowest to largest
-		for (int i = 0; i < (int)listToTest.size(); i++)
-		{
-			// Code
-		}
-		// Ditch nodes which have already been visited
-	}
-
-}
-*/
 
 void toggleBarrier(int x, int y)
 {
@@ -293,6 +251,72 @@ void toggleBarrier(int x, int y)
 				nodes[j][i].barrier = true;
 			else if (nodes[j][i].x == x && nodes[j][i].y == y && nodes[j][i].barrier == true)
 				nodes[j][i].barrier = false;
+		}
+	}
+}
+
+void toggleStart(int x, int y)
+{
+	for (int j = 0; j < 16; j++)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			if (nodes[j][i].x == x && nodes[j][i].y == y && nodes[j][i].barrier == false && nodes[j][i].start == false)
+			{
+				for (int x = 0; x < 16; x++)
+				{
+					for (int y = 0; y < 16; y++)
+					{
+						nodes[x][y].start = false;
+					}
+				}
+
+				nodes[j][i].start = true;
+				nodeStart = &nodes[j][i];
+				startX = x;
+				startY = y;
+			}
+		}
+	}
+}
+
+void toggleEnd(int x, int y)
+{
+	for (int j = 0; j < 16; j++)
+	{
+		for (int i = 0; i < 16; i++)
+		{
+			if (nodes[j][x].x == x && nodes[j][i].y == y && nodes[j][i].barrier == false && nodes[j][i].end == false)
+			{
+				for (int x = 0; x < 16; x++)
+				{
+					for (int y = 0; y < 16; y++)
+					{
+						nodes[x][y].end = false;
+					}
+				}
+
+				nodes[j][i].end = true;
+				nodeEnd = &nodes[j][i];
+				endX = j;
+				endY = i;
+			}
+		}
+	}
+}
+
+void restart()
+{
+	for (int x = 0; x < 16; x++)
+	{
+		for (int y = 0; y < 16; y++)
+		{
+			nodes[x][y].visited = false;
+			nodes[x][y].barrier = false;
+			nodes[x][y].path = false;
+			nodes[x][y].globalGoal = INFINITY;
+			nodes[x][y].localGoal = INFINITY;
+			nodes[x][y].parent = nullptr;
 		}
 	}
 }
@@ -311,6 +335,9 @@ void drawNodes()
 			
 			else if (nodes[x][y].end == true)
 				endDraw(nodes[x][y].x, nodes[x][y].y);
+			
+			else if (nodes[x][y].path == true)
+				pathDraw(nodes[x][y].x, nodes[x][y].y);
 
 			else
 				emptyDraw(nodes[x][y].x, nodes[x][y].y);
@@ -339,5 +366,11 @@ void startDraw(int x, int y)
 void endDraw(int x, int y)
 {
 	glColor3f(1.0, 0.0, 0.0);
+	glRectd(x, y, x + 1, y + 1);
+}
+
+void pathDraw(int x, int y)
+{
+	glColor3f(1.0, 0.0, 1.0);
 	glRectd(x, y, x + 1, y + 1);
 }
