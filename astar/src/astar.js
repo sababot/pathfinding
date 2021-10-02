@@ -7906,12 +7906,6 @@ var ASM_CONSTS = {
           GLImmediate.matrixLib.mat4.ortho(left, right, bottom, top_, nearVal, farVal));
     }
 
-  /** @type {function(...*):?} */
-  function _glRectd(
-  ) {
-  err('missing function: glRectd'); abort(-1);
-  }
-
   function _glVertex2f(x, y) {
       assert(GLImmediate.mode >= 0); // must be in begin/end
       GLImmediate.vertexData[GLImmediate.vertexCounter++] = x;
@@ -8393,7 +8387,6 @@ var asmLibraryArg = {
   "glLoadIdentity": _glLoadIdentity,
   "glMatrixMode": _glMatrixMode,
   "glOrtho": _glOrtho,
-  "glRectd": _glRectd,
   "glVertex2f": _glVertex2f,
   "glViewport": _glViewport,
   "glutCreateWindow": _glutCreateWindow,
