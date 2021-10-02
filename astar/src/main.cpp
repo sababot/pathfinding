@@ -1,5 +1,5 @@
 #include <GL/gl.h>
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 #include <vector>
 #include "../include/graphics.h"
 

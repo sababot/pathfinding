@@ -1,4 +1,4 @@
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 #include "../include/graphics.h"
 #include <vector>
 #include <array>
@@ -347,30 +347,56 @@ void drawNodes()
 
 void barrierDraw(int x, int y)
 {
-	glColor3f(1.0, 1.0, 1.0);
-	glRectd(x, y, x + 1, y + 1);
+	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+      glColor3f(1.0f, 1.0f, 0.0f); // Red
+      glVertex2f(x, y);    // x, y
+      glVertex2f(x + 1, y);
+      glVertex2f(x + 1, y + 1);
+      glVertex2f(x, y + 1);
+   	glEnd();
 }
 
 void emptyDraw(int x, int y)
 {
-	glColor3f(0.0, 0.0, 0.0);
-	glRectd(x, y ,x + 1, y + 1);
+	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+      glColor3f(0.0f, 0.0f, 0.0f); // Red
+      glVertex2f(x, y);    // x, y
+      glVertex2f(x + 1, y);
+      glVertex2f(x + 1, y + 1);
+      glVertex2f(x, y + 1);
+   	glEnd();
 }
 
 void startDraw(int x, int y)
 {
-	glColor3f(0.0, 1.0, 0.0);
-	glRectd(x, y, x + 1, y + 1);
+	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+      glColor3f(0.0f, 1.0f, 0.0f); // Red
+      glVertex2f(x, y);    // x, y
+      glVertex2f(x + 1, y);
+      glVertex2f(x + 1, y + 1);
+      glVertex2f(x, y + 1);
+   	glEnd();
 }
 
 void endDraw(int x, int y)
 {
-	glColor3f(1.0, 0.0, 0.0);
-	glRectd(x, y, x + 1, y + 1);
+	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+      glColor3f(1.0f, 0.0f, 0.0f); // Red
+      glVertex2f(x, y);    // x, y
+      glVertex2f(x + 1, y);
+      glVertex2f(x + 1, y + 1);
+      glVertex2f(x, y + 1);
+   	glEnd();
 }
 
 void pathDraw(int x, int y)
 {
 	glColor3f(1.0, 0.0, 1.0);
-	glRectd(x, y, x + 1, y + 1);
+	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+      glColor3f(1.0f, 0.0f, 1.0f); // Red
+      glVertex2f(x, y);    // x, y
+      glVertex2f(x + 1, y);
+      glVertex2f(x + 1, y + 1);
+      glVertex2f(x, y + 1);
+   	glEnd();
 }
