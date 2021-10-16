@@ -347,55 +347,30 @@ void drawNodes()
 
 void barrierDraw(int x, int y)
 {
-	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-      		glColor3f(1.0f, 1.0f, 0.0f); // Red
-      		glVertex2f(x, y);    // x, y
-      		glVertex2f(x + 1, y);
-      		glVertex2f(x + 1, y + 1);
-      		glVertex2f(x, y + 1);
-   	glEnd();
+      	glColor3f(1.0f, 1.0f, 0.0f);
+	glRectd(x, y, x + 1, y + 1);
 }
 
 void emptyDraw(int x, int y)
 {
-	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-      		glColor3f(0.0f, 0.0f, 0.0f); // Red
-      		glVertex2f(x, y);    // x, y
-      		glVertex2f(x + 1, y);
-      		glVertex2f(x + 1, y + 1);
-      		glVertex2f(x, y + 1);
-   	glEnd();
+      	glColor3f(0.0f, 0.0f, 0.0f); // Red
+	glRectd(x, y, x + 1, y + 1);
 }
 
 void startDraw(int x, int y)
 {
-	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-      		glColor3f(0.0f, 1.0f, 0.0f); // Red
-      		glVertex2f(x, y);    // x, y
-      		glVertex2f(x + 1, y);
-      		glVertex2f(x + 1, y + 1);
-      		glVertex2f(x, y + 1);
-   	glEnd();
+      	glColor3f(0.0f, 1.0f, 0.0f); // Red
+	glRectd(x, y, x + 1, y + 1);
 }
 
 void endDraw(int x, int y)
 {
-	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-      		glColor3f(1.0f, 0.0f, 0.0f); // Red
-      		glVertex2f(x, y);    // x, y
-      		glVertex2f(x + 1, y);
-      		glVertex2f(x + 1, y + 1);
-      		glVertex2f(x, y + 1);
-   	glEnd();
+      	glColor3f(1.0f, 0.0f, 0.0f); // Red
+	glRectd(x, y, x + 1, y + 1);
 }
 
 void pathDraw(int x, int y)
 {
-	glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-      		glColor3f(1.0f, 0.0f, 1.0f); // Red
-      		glVertex2f(x, y);    // x, y
-      		glVertex2f(x + 1, y);
-      		glVertex2f(x + 1, y + 1);
-      		glVertex2f(x, y + 1);
-   	glEnd();
+      	glColor3f(1.0f, 0.0f, 1.0f); // Red
+	glRectd(x, y, x + 1, y + 1);
 }
